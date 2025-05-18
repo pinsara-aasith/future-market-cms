@@ -1,10 +1,10 @@
 // BranchSupervisor model to connect supervisors to branches
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, ObjectId, Schema } from 'mongoose';
 import { IUser } from './user-model';
 
 export interface IBranchSupervisor extends Document {
   branchCode: string;
-  user: IUser['_id'];
+  user: IUser | ObjectId;
 }
 
 const BranchSupervisorSchema: Schema = new Schema({

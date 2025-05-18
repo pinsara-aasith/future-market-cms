@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import User, { UserRole, IUser } from '../models/user-model';
 import Customer from '../models/customer-model';
+import { logger } from '../utils/logger';
 
 // Token generation helper
 const generateToken = (user: IUser): string => {
@@ -13,7 +14,7 @@ const generateToken = (user: IUser): string => {
     { expiresIn: '24h' }
   );
 };
-
+console.log(process.env.JWT_REFRESH_SECRET)
 // Token refresh helper
 const generateRefreshToken = (user: IUser): string => {
   return jwt.sign(
@@ -28,7 +29,7 @@ const generateRefreshToken = (user: IUser): string => {
  */
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { fullName, email, password, phoneNo } = req.body;
+    const { fullName, email, password, phoneNo, eCardHolder } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -51,7 +52,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     // Create customer profile
     const customer = new Customer({
       user: user._id,
-      eCardHolder: false
+      eCardHolder: !!eCardHolder
     });
 
     await customer.save();
@@ -73,6 +74,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       refreshToken
     });
   } catch (error) {
+    console.error(error)
     res.status(500).json({ message: 'Error during registration', error });
   }
 };
@@ -93,14 +95,23 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     // Check password
     const isPasswordValid = await user.comparePassword(password);
+
+
     if (!isPasswordValid) {
       res.status(401).json({ message: 'Invalid credentials' });
       return;
     }
 
     // Generate tokens
+    console.log(user.toJSON(),isPasswordValid)
+
     const token = generateToken(user);
+    console.log(user.toJSON(),isPasswordValid)
+
     const refreshToken = generateRefreshToken(user);
+
+    console.log(user.toJSON(),isPasswordValid)
+
 
     res.json({
       message: 'Login successful',
@@ -115,6 +126,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       refreshToken
     });
   } catch (error) {
+    logger.error(error)
     res.status(500).json({ message: 'Error during login', error });
   }
 };

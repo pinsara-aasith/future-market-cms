@@ -238,9 +238,11 @@ export const updateComplaintStatus = async (req: Request, res: Response): Promis
 export const addActionToComplaint = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { action } = req.body;
+    let action = req.body;
+
+    action = {...action, createdAt: new Date()}
     
-    if (!action || typeof action !== 'string') {
+    if (!action?.description || typeof action?.description !== 'string') {
       res.status(400).json({ message: 'Action text is required' });
       return;
     }

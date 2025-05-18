@@ -13,6 +13,7 @@ import complaintRoutes from './routes/complaint-routes';
 import { errorHandler } from './middleware/error-handler';
 import { setupAdminUser } from './utils/admin-setup';
 import { logger } from './utils/logger';
+import { runSeeder } from './services/database-seeder';
 
 // Load environment variables
 dotenv.config();
@@ -46,7 +47,8 @@ const connectDB = async (): Promise<void> => {
     logger.info('MongoDB connected successfully');
 
     // Setup default admin user
-    await setupAdminUser();
+    // await setupAdminUser();
+    // await runSeeder()
   } catch (error) {
     logger.error('MongoDB connection error:', error);
     process.exit(1);
@@ -68,7 +70,7 @@ const startServer = async (): Promise<void> => {
 process.on('unhandledRejection', (err: Error) => {
   logger.error(`Unhandled Rejection: ${err.message}`);
   // Close server & exit process
-  process.exit(1);
+  // process.exit(1);
 });
 
 startServer().catch((err) => {

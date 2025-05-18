@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import { CheckCircle, Clock, AlertCircle, MessageCircle, Activity } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
@@ -25,23 +25,8 @@ export const ComplaintCard: React.FC<ComplaintCardProps> = ({ complaint, onUpdat
   
   const canManageComplaint = user && (
     user.role === 'admin' || 
-    (user.role === 'branch_supervisor' && user.id === complaint.branchCode)
+    (user.role === 'branch_supervisor' && user._id === complaint.branchCode)
   );
-  
-  const getStatusIcon = (status: ComplaintStatus) => {
-    switch (status) {
-      case 'pending':
-        return <Clock size={16} className="text-warning-500" />;
-      case 'in_progress':
-        return <Activity size={16} className="text-accent-500" />;
-      case 'resolved':
-        return <CheckCircle size={16} className="text-success-500" />;
-      case 'rejected':
-        return <AlertCircle size={16} className="text-error-500" />;
-      default:
-        return <Clock size={16} className="text-warning-500" />;
-    }
-  };
   
   const getStatusBadge = (status: ComplaintStatus) => {
     switch (status) {
@@ -61,7 +46,7 @@ export const ComplaintCard: React.FC<ComplaintCardProps> = ({ complaint, onUpdat
   const handleStatusChange = async (newStatus: ComplaintStatus) => {
     try {
       setIsSubmitting(true);
-      await updateComplaintStatus(complaint.id!, newStatus);
+      await updateComplaintStatus(complaint._id!, newStatus);
       toast.success(`Complaint status updated to ${newStatus.replace('_', ' ')}`);
       if (onUpdate) onUpdate();
     } catch (error) {
@@ -77,7 +62,7 @@ export const ComplaintCard: React.FC<ComplaintCardProps> = ({ complaint, onUpdat
     
     try {
       setIsSubmitting(true);
-      await addComplaintAction(complaint.id!, actionText);
+      await addComplaintAction(complaint._id!, actionText);
       toast.success('Action added successfully');
       setActionText('');
       setIsAddingAction(false);
@@ -136,7 +121,6 @@ export const ComplaintCard: React.FC<ComplaintCardProps> = ({ complaint, onUpdat
                 {complaint.actionsTaken.map((action, index) => (
                   <li key={index} className="bg-neutral-50 p-3 rounded-md text-sm">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="font-medium">{action.createdBy}</span>
                       <span className="text-xs text-neutral-500">
                         {format(new Date(action.createdAt), 'MMM dd, yyyy')}
                       </span>

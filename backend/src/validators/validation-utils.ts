@@ -17,7 +17,8 @@ export const validate = (validations: ValidationChain[]) => {
     if (errors.isEmpty()) {
       return next();
     }
-    
+
+    return res.status(500).json(errors)
     // If validation errors exist, throw a custom error
     throw new CustomError(
       'Validation failed',

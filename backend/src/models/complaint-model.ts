@@ -40,7 +40,7 @@ const ComplaintSchema: Schema = new Schema({
     default: false
   },
   actionsTaken: [{ 
-    type: String 
+    type: Object 
   }],
   status: { 
     type: String, 

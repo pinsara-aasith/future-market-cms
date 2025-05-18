@@ -9,8 +9,21 @@ const LoginPage = lazy(() => import('./pages/authentication/LoginPage').then(mod
 const RegisterPage = lazy(() => import('./pages/authentication/RegisterPage').then(module => ({ default: module.RegisterPage })));
 const DashboardPage = lazy(() => import('./pages/customer/DashboardPage').then(module => ({ default: module.DashboardPage })));
 const ComplaintsPage = lazy(() => import('./pages/complaints/ComplaintsPage').then(module => ({ default: module.ComplaintsPage })));
+const ViewComplaintPage = lazy(() => import('./pages/complaints/ViewComplaintPage').then(module => ({ default: module.ViewComplaintPage })));
+
+
 const NewComplaintPage = lazy(() => import('./pages/complaints/NewComplaintPage').then(module => ({ default: module.NewComplaintPage })));
+
 const BranchesPage = lazy(() => import('./pages/branches/BranchesPage').then(module => ({ default: module.BranchesPage })));
+const NewBranchPage = lazy(() => import('./pages/branches/NewBranchPage').then(module => ({ default: module.NewBranchPage })));
+const EditBranchPage = lazy(() => import('./pages/branches/EditBranchPage').then(module => ({ default: module.EditBranchPage })));
+
+const SupervisorsPage = lazy(() => import('./pages/supervisors/SupervisorsPage').then(module => ({ default: module.SupervisorsPage })));
+const NewSupervisorPage = lazy(() => import('./pages/supervisors/NewSupervisorPage').then(module => ({ default: module.NewSupervisorPage })));
+const EditSupervisorPage = lazy(() => import('./pages/supervisors/EditSupervisorPage').then(module => ({ default: module.EditSupervisorPage })));
+
+
+const CustomersPage = lazy(() => import('./pages/customers/CustomersPage').then(module => ({ default: module.CustomersPage })));
 
 // Loading component
 const LoadingFallback = () => (
@@ -77,6 +90,15 @@ function App() {
               </ProtectedRoute>
             } 
           />
+
+          <Route 
+            path="/complaints/:id/view" 
+            element={
+              <AdminRoute>
+                <ViewComplaintPage />
+              </AdminRoute>
+            } 
+          />
           
           <Route 
             path="/complaints/new" 
@@ -89,10 +111,60 @@ function App() {
           
           {/* Admin Routes */}
           <Route 
-            path="/admin/branches" 
+            path="/branches" 
             element={
               <AdminRoute>
                 <BranchesPage />
+              </AdminRoute>
+            } 
+          />
+          <Route 
+            path="/branches/new" 
+            element={
+              <AdminRoute>
+                <NewBranchPage />
+              </AdminRoute>
+            } 
+          />
+          <Route 
+            path="/branches/:id/edit" 
+            element={
+              <AdminRoute>
+                <EditBranchPage />
+              </AdminRoute>
+            } 
+          />
+          
+          <Route 
+            path="/supervisors" 
+            element={
+              <AdminRoute>
+                <SupervisorsPage />
+              </AdminRoute>
+            } 
+          />
+          <Route 
+            path="/supervisors/new" 
+            element={
+              <AdminRoute>
+                <NewSupervisorPage />
+              </AdminRoute>
+            } 
+          />
+          <Route 
+            path="/supervisors/:id/edit" 
+            element={
+              <AdminRoute>
+                <EditSupervisorPage />
+              </AdminRoute>
+            } 
+          />
+
+          <Route 
+            path="/customers" 
+            element={
+              <AdminRoute>
+                <CustomersPage />
               </AdminRoute>
             } 
           />

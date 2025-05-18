@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
-  Home, ShoppingBag, Users, Mail, Settings, LogOut, Menu, X, 
+  ShoppingBag, Users, LogOut, Menu, X, 
   LayoutDashboard, UserCircle, Building, MessageSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -59,19 +59,19 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
   const adminLinks = user.role === 'admin' && (
     <>
       <SidebarLink 
-        to="/admin/branches" 
+        to="/branches" 
         icon={<Building size={18} />} 
         label="Branches" 
         onClick={closeMobileMenu}
       />
       <SidebarLink 
-        to="/admin/supervisors" 
+        to="/supervisors" 
         icon={<Users size={18} />} 
         label="Supervisors" 
         onClick={closeMobileMenu}
       />
       <SidebarLink 
-        to="/admin/customers" 
+        to="/customers" 
         icon={<ShoppingBag size={18} />} 
         label="Customers" 
         onClick={closeMobileMenu}

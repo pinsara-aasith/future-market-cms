@@ -32,15 +32,13 @@ export const ComplaintsPage: React.FC = () => {
         if (user) {
           if (user.role === 'admin') {
             complaintData = await getAllComplaints();
+            
           } else if (user.role === 'branch_supervisor') {
-            // In a real app, you would have the supervisor's branch code available
-            const branchCode = 'example-branch'; // Replace with actual branch code
-            complaintData = await getBranchComplaints(branchCode);
+            complaintData = await getAllComplaints();
           } else {
             complaintData = await getUserComplaints();
           }
         }
-        
         setComplaints(complaintData);
         
         // Fetch branches for filters
@@ -197,7 +195,7 @@ export const ComplaintsPage: React.FC = () => {
           <div className="space-y-4">
             {filteredComplaints.map((complaint) => (
               <ComplaintCard 
-                key={complaint.id} 
+                key={complaint._id} 
                 complaint={complaint}
                 onUpdate={handleRefresh}
               />

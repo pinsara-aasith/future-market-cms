@@ -11,13 +11,10 @@ export const setupAdminUser = async (): Promise<void> => {
     const adminExists = await User.findOne({ role: 'admin' });
     
     if (!adminExists) {
-      const saltRounds = Number(process.env.SALT_ROUNDS) || 10;
-      const hashedPassword = await bcrypt.hash('admin123', saltRounds);
-      
       await User.create({
         fullName: 'System Administrator',
         email: 'admin@supermarket.com',
-        password: hashedPassword,
+        password: 'admin123',
         phoneNo: '1234567890',
         role: 'admin'
       });

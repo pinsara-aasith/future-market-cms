@@ -13,7 +13,7 @@ export const authValidations = {
       .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
     body('phoneNo')
       .notEmpty().withMessage('Phone number is required')
-      .matches(/^[0-9+\-\s]+$/).withMessage('Please provide a valid phone number')
+      .matches(/^[0-9+\-\s]+$/).withMessage('Please provide a valid phone number'),
   ],
   
   login: [
@@ -101,18 +101,25 @@ export const complaintValidations = {
       .isString().withMessage('Actions taken must be a string'),
     body('status')
       .optional()
-      .isIn(['pending', 'in-progress', 'resolved', 'closed'])
-      .withMessage('Status must be one of: pending, in-progress, resolved, closed')
+      .isIn(['pending', 'in_progress', 'resolved', 'closed'])
+      .withMessage('Status must be one of: pending, in_progress, resolved, closed')
   ]
 };
 
 export const customerValidations = {
   create: [
-    body('user')
-      .notEmpty().withMessage('User information is required'),
-    body('eCardHolder')
-      .optional()
-      .isBoolean().withMessage('E-card holder must be a boolean value')
+    body('fullName')
+      .notEmpty().withMessage('Full name is required')
+      .isString().withMessage('Full name must be a string'),
+    body('email')
+      .notEmpty().withMessage('Email is required')
+      .isEmail().withMessage('Please provide a valid email'),
+    body('password')
+      .notEmpty().withMessage('Password is required')
+      .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+    body('phoneNo')
+      .notEmpty().withMessage('Phone number is required')
+      .matches(/^[0-9+\-\s]+$/).withMessage('Please provide a valid phone number'),
   ],
   
   update: [

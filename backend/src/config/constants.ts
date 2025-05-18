@@ -5,14 +5,14 @@
 // User roles
 export const USER_ROLES = {
   ADMIN: 'admin',
-  BRANCH_SUPERVISOR: 'branchSupervisor',
+  BRANCH_SUPERVISOR: 'branch_supervisor',
   CUSTOMER: 'customer'
 };
 
 // Complaint statuses
 export const COMPLAINT_STATUS = {
   PENDING: 'pending',
-  IN_PROGRESS: 'in-progress',
+  IN_PROGRESS: 'in_progress',
   RESOLVED: 'resolved',
   CLOSED: 'closed'
 };

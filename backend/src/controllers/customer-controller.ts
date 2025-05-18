@@ -8,9 +8,6 @@ import mongoose from 'mongoose';
  * Register a new customer
  */
 export const registerCustomer = async (req: Request, res: Response): Promise<void> => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { fullName, email, phoneNo, password, eCardHolder = false } = req.body;
 
@@ -30,7 +27,7 @@ export const registerCustomer = async (req: Request, res: Response): Promise<voi
       role: 'customer'
     });
 
-    await user.save({ session });
+    await user.save();
 
     // Create customer profile
     const customer = new Customer({
@@ -38,10 +35,7 @@ export const registerCustomer = async (req: Request, res: Response): Promise<voi
       eCardHolder
     });
 
-    await customer.save({ session });
-
-    await session.commitTransaction();
-    session.endSession();
+    await customer.save();
 
     res.status(201).json({
       message: 'Customer registered successfully',
@@ -56,8 +50,6 @@ export const registerCustomer = async (req: Request, res: Response): Promise<voi
       }
     });
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
     res.status(500).json({ message: 'Error registering customer', error });
   }
 };
@@ -110,9 +102,6 @@ export const getCustomerProfile = async (req: Request, res: Response): Promise<v
  * Update customer profile (for logged in customer)
  */
 export const updateCustomerProfile = async (req: Request, res: Response): Promise<void> => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const userId = req.user?._id;
     const { fullName, phoneNo, eCardHolder } = req.body;
@@ -121,7 +110,7 @@ export const updateCustomerProfile = async (req: Request, res: Response): Promis
     const user = await User.findByIdAndUpdate(
       userId,
       { fullName, phoneNo },
-      { new: true, runValidators: true, session }
+      { new: true, runValidators: true }
     );
 
     if (!user) {
@@ -133,7 +122,7 @@ export const updateCustomerProfile = async (req: Request, res: Response): Promis
     const customer = await Customer.findOneAndUpdate(
       { user: userId },
       { eCardHolder },
-      { new: true, runValidators: true, session }
+      { new: true, runValidators: true }
     ).populate({
       path: 'user',
       select: 'fullName email phoneNo role'
@@ -144,16 +133,11 @@ export const updateCustomerProfile = async (req: Request, res: Response): Promis
       return;
     }
 
-    await session.commitTransaction();
-    session.endSession();
-
     res.json({
       message: 'Customer profile updated successfully',
       customer
     });
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
     res.status(500).json({ message: 'Error updating customer profile', error });
   }
 };
@@ -162,17 +146,11 @@ export const updateCustomerProfile = async (req: Request, res: Response): Promis
  * Delete customer account (for logged in customer)
  */
 export const deleteCustomerAccount = async (req: Request, res: Response): Promise<void> => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const userId = req.user?._id;
 
     // Delete customer profile
-    const deletedCustomer = await Customer.findOneAndDelete(
-      { user: userId },
-      { session }
-    );
+    const deletedCustomer = await Customer.findOneAndDelete({ user: userId });
 
     if (!deletedCustomer) {
       res.status(404).json({ message: 'Customer profile not found' });
@@ -180,20 +158,15 @@ export const deleteCustomerAccount = async (req: Request, res: Response): Promis
     }
 
     // Delete user account
-    const deletedUser = await User.findByIdAndDelete(userId, { session });
+    const deletedUser = await User.findByIdAndDelete(userId);
 
     if (!deletedUser) {
       res.status(404).json({ message: 'User not found' });
       return;
     }
 
-    await session.commitTransaction();
-    session.endSession();
-
     res.json({ message: 'Customer account deleted successfully' });
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
     res.status(500).json({ message: 'Error deleting customer account', error });
   }
 };
@@ -232,9 +205,6 @@ export const getCustomerById = async (req: Request, res: Response): Promise<void
  * Delete customer (admin only)
  */
 export const deleteCustomer = async (req: Request, res: Response): Promise<void> => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { id } = req.params;
 
@@ -253,33 +223,28 @@ export const deleteCustomer = async (req: Request, res: Response): Promise<void>
     }
 
     // Delete customer profile
-    const deletedCustomer = await Customer.findByIdAndDelete(id, { session });
+    const deletedCustomer = await Customer.findByIdAndDelete(id);
 
     // Delete associated user account
-    const deletedUser = await User.findByIdAndDelete(customer.user, { session });
+    const deletedUser = await User.findByIdAndDelete(customer.user);
 
     if (!deletedUser) {
       res.status(404).json({ message: 'Associated user not found' });
       return;
     }
 
-    await session.commitTransaction();
-    session.endSession();
-
     res.json({ 
       message: 'Customer deleted successfully',
       deletedCustomer: {
         ...deletedCustomer?.toObject(),
         user: {
-          id: deletedUser._id,
+          _id: deletedUser._id,
           fullName: deletedUser.fullName,
           email: deletedUser.email
         }
       }
     });
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
     res.status(500).json({ message: 'Error deleting customer', error });
   }
 };

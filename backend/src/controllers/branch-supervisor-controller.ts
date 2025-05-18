@@ -9,7 +9,9 @@ import Branch from '../models/branch-model';
  */
 export const createBranchSupervisor = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { fullName, email, password, phoneNo, branchCode } = req.body;
+    const { user:u, branchCode } = req.body;
+
+    const { fullName, email, password, phoneNo } = u;
 
     // Check if branch exists
     const branch = await Branch.findOne({ branchCode });
@@ -47,7 +49,7 @@ export const createBranchSupervisor = async (req: Request, res: Response): Promi
     res.status(201).json({
       message: 'Branch supervisor created successfully',
       branchSupervisor: {
-        id: branchSupervisor._id,
+        _id: branchSupervisor._id,
         user: {
           id: user._id,
           fullName: user.fullName,
@@ -108,30 +110,49 @@ export const getBranchSupervisorById = async (req: Request, res: Response): Prom
 export const updateBranchSupervisor = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { branchCode } = req.body;
-    
-    // Check if branch exists
-    const branch = await Branch.findOne({ branchCode });
-    if (!branch) {
-      res.status(400).json({ message: 'Branch not found' });
-      return;
-    }
-    
-    // Find and update the branch supervisor
-    const updatedSupervisor = await BranchSupervisor.findByIdAndUpdate(
-      id,
-      { branchCode },
-      { new: true, runValidators: true }
-    ).populate('user', 'fullName email phoneNo role');
-    
-    if (!updatedSupervisor) {
+    const { branchCode, user: userUpdates } = req.body;
+
+    // Find the branch supervisor
+    const branchSupervisor = await BranchSupervisor.findById(id);
+    if (!branchSupervisor) {
       res.status(404).json({ message: 'Branch supervisor not found' });
       return;
     }
-    
+
+    // If branchCode is provided, validate and update
+    if (branchCode) {
+      const branch = await Branch.findOne({ branchCode });
+      if (!branch) {
+        res.status(400).json({ message: 'Branch not found' });
+        return;
+      }
+      branchSupervisor.branchCode = branchCode;
+    }
+
+    // If user fields are provided, update the user document
+    if (userUpdates && typeof userUpdates === 'object') {
+      const user = await User.findById(branchSupervisor.user);
+      if (!user) {
+        res.status(404).json({ message: 'User not found' });
+        return;
+      }
+
+      const allowedFields = ['fullName', 'email', 'phoneNo', 'role'];
+      for (const key of allowedFields) {
+        if (userUpdates[key] !== undefined) {
+          (user as any)[key] = userUpdates[key];
+        }
+      }
+
+      await user.save();
+    }
+
+    await branchSupervisor.save();
+    const populatedSupervisor = await BranchSupervisor.findById(id).populate('user', 'fullName email phoneNo role');
+
     res.json({
       message: 'Branch supervisor updated successfully',
-      supervisor: updatedSupervisor
+      supervisor: populatedSupervisor
     });
   } catch (error) {
     res.status(500).json({ message: 'Error updating branch supervisor', error });

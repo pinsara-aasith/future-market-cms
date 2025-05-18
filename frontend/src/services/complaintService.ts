@@ -3,7 +3,7 @@ import { Complaint, ComplaintAction, ComplaintStatus } from '../types';
 
 export const createComplaint = async (complaintData: Omit<Complaint, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'actionsTaken'>): Promise<Complaint> => {
   const response = await api.post('/complaint', complaintData);
-  return response.data;
+  return response.data?.complaint;
 };
 
 export const createAnonymousComplaint = async (complaintData: Omit<Complaint, 'id' | 'createdBy' | 'createdAt' | 'updatedAt' | 'status' | 'actionsTaken'>): Promise<Complaint> => {
@@ -13,17 +13,17 @@ export const createAnonymousComplaint = async (complaintData: Omit<Complaint, 'i
 
 export const getComplaintStatus = async (id: string): Promise<Complaint> => {
   const response = await api.get(`/complaint/status/${id}`);
-  return response.data;
+  return response.data.complaint;
 };
 
 export const getUserComplaints = async (): Promise<Complaint[]> => {
   const response = await api.get('/complaint/my-complaints');
-  return response.data;
+  return response.data?.complaints;
 };
 
 export const getBranchComplaints = async (branchCode: string): Promise<Complaint[]> => {
   const response = await api.get(`/complaint/branch/${branchCode}`);
-  return response.data;
+  return response.data?.complaints;
 };
 
 export const updateComplaintStatus = async (id: string, status: ComplaintStatus): Promise<Complaint> => {
@@ -38,5 +38,16 @@ export const addComplaintAction = async (id: string, description: string): Promi
 
 export const getAllComplaints = async (): Promise<Complaint[]> => {
   const response = await api.get('/complaint');
-  return response.data;
+  return response.data?.complaints;
+};
+
+
+export const getComplaintById = async (_id: string): Promise<Complaint> => {
+  const response = await api.get(`/complaint/${_id}`);
+  return response.data?.complaint;
+};
+
+export const getMyComplaints = async (): Promise<Complaint[]> => {
+  const response = await api.get('/complaint/my-complaints');
+  return response.data?.complaints;
 };

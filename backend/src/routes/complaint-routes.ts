@@ -51,8 +51,14 @@ router.post('/:id/actions',
 // Admin-only route to view all complaints
 router.get('/', 
   authenticate, 
-  authorize([UserRole.ADMIN]), 
+  authorize([UserRole.ADMIN, UserRole.BRANCH_SUPERVISOR]), 
   getAllComplaints
+);
+
+
+router.get('/:id', 
+  authenticate, 
+  getComplaintById
 );
 
 export default router;

@@ -1,25 +1,23 @@
 import api from './api';
-import { BranchSupervisor, User } from '../types';
+import { BranchSupervisor } from '../types';
 
 export const createSupervisor = async (
-  userData: User, 
-  branchCode: string
+  supervisor: BranchSupervisor
 ): Promise<BranchSupervisor> => {
   const response = await api.post('/branch-supervisor', {
-    user: userData,
-    branchCode
+    ...supervisor
   });
-  return response.data;
+  return response.data?.supervisor;
 };
 
 export const getAllSupervisors = async (): Promise<BranchSupervisor[]> => {
   const response = await api.get('/branch-supervisor');
-  return response.data;
+  return response.data?.supervisors;
 };
 
 export const getSupervisorById = async (id: string): Promise<BranchSupervisor> => {
   const response = await api.get(`/branch-supervisor/${id}`);
-  return response.data;
+  return response.data?.supervisor;
 };
 
 export const updateSupervisor = async (
@@ -27,7 +25,7 @@ export const updateSupervisor = async (
   data: Partial<BranchSupervisor>
 ): Promise<BranchSupervisor> => {
   const response = await api.put(`/branch-supervisor/${id}`, data);
-  return response.data;
+  return response.data?.supervisor;
 };
 
 export const deleteSupervisor = async (id: string): Promise<void> => {

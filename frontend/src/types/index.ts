@@ -1,7 +1,7 @@
 export type UserRole = 'customer' | 'branch_supervisor' | 'admin';
 
 export interface User {
-  id?: string;
+  _id?: string;
   fullName: string;
   email: string;
   phoneNo: string;
@@ -10,37 +10,37 @@ export interface User {
 }
 
 export interface Customer {
-  id?: string;
-  user: User;
+  _id?: string;
+  user: User | string; // Can be either User object or user ID string
   eCardHolder: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface BranchSupervisor {
+  _id?: string;
+  branchCode: string;
+  user:  User;
 }
 
 export interface Branch {
-  id?: string;
+  _id?: string;
   branchCode: string;
   branchName: string;
   address: string;
   phoneNo: string;
 }
 
-export interface BranchSupervisor {
-  id?: string;
-  branchCode: string;
-  user: User;
-}
-
 export type ComplaintStatus = 'pending' | 'in_progress' | 'resolved' | 'rejected';
 
 export interface ComplaintAction {
-  id?: string;
-  complaintId: string;
+  _id?: string;
   description: string;
-  createdBy: string;
   createdAt: Date;
 }
 
 export interface Complaint {
-  id?: string;
+  _id?: string;
   description: string;
   branchCode: string;
   createdBy?: string;

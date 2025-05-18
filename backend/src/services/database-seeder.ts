@@ -4,7 +4,7 @@ import User from '../models/user-model';
 import Branch from '../models/branch-model';
 import BranchSupervisor from '../models/branch-supervisor-model';
 import Customer from '../models/customer-model';
-import Complaint from '../models/complaint-model-model';
+import Complaint from '../models/complaint-model';
 import { logger } from '../utils/logger';
 import dotenv from 'dotenv';
 
@@ -42,18 +42,18 @@ const cleanDB = async (): Promise<void> => {
 const seedDB = async (): Promise<void> => {
   try {
     const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS) || 10);
-    const password = await bcrypt.hash('password123', salt);
+    const password = await bcrypt.hash('password', salt);
     
     // Create admin user
     const adminUser = await User.create({
       fullName: 'Admin User',
       email: 'admin@supermarket.com',
-      password,
+      password: 'password',
       phoneNo: '1234567890',
       role: 'admin'
     });
     logger.info(`Admin user created with ID: ${adminUser._id}`);
-    
+
     // Create branches
     const branches = await Branch.insertMany([
       {
@@ -76,32 +76,32 @@ const seedDB = async (): Promise<void> => {
       }
     ]);
     logger.info(`Created ${branches.length} branches`);
-    
+
     // Create branch supervisors
     const supervisorUsers = await User.insertMany([
       {
         fullName: 'Supervisor One',
         email: 'supervisor1@supermarket.com',
-        password,
+        password:password,
         phoneNo: '1234567894',
-        role: 'branchSupervisor'
+        role: 'branch_supervisor'
       },
       {
         fullName: 'Supervisor Two',
         email: 'supervisor2@supermarket.com',
-        password,
+        password: password,
         phoneNo: '1234567895',
-        role: 'branchSupervisor'
+        role: 'branch_supervisor'
       },
       {
         fullName: 'Supervisor Three',
         email: 'supervisor3@supermarket.com',
-        password,
+        password: password,
         phoneNo: '1234567896',
-        role: 'branchSupervisor'
+        role: 'branch_supervisor'
       }
     ]);
-    
+
     // Link supervisors to branches
     const branchSupervisors = await BranchSupervisor.insertMany([
       {
@@ -118,7 +118,7 @@ const seedDB = async (): Promise<void> => {
       }
     ]);
     logger.info(`Created ${branchSupervisors.length} branch supervisors`);
-    
+
     // Create customers
     const customerUsers = await User.insertMany([
       {
@@ -136,7 +136,7 @@ const seedDB = async (): Promise<void> => {
         role: 'customer'
       }
     ]);
-    
+
     const customers = await Customer.insertMany([
       {
         user: customerUsers[0]._id,
@@ -148,7 +148,7 @@ const seedDB = async (): Promise<void> => {
       }
     ]);
     logger.info(`Created ${customers.length} customers`);
-    
+
     // Create complaints
     const complaints = await Complaint.insertMany([
       {
@@ -162,7 +162,7 @@ const seedDB = async (): Promise<void> => {
         description: 'Out of stock items not marked properly',
         branchCode: 'BR002',
         createdBy: customerUsers[1]._id,
-        status: 'in-progress',
+        status: 'in_progress',
         actionsTaken: 'Investigating the issue'
       },
       {
@@ -173,7 +173,7 @@ const seedDB = async (): Promise<void> => {
       }
     ]);
     logger.info(`Created ${complaints.length} complaints`);
-    
+
     logger.info('Database seeded successfully');
   } catch (error) {
     logger.error('Error seeding database:', error);
@@ -181,12 +181,12 @@ const seedDB = async (): Promise<void> => {
 };
 
 // Main function to run the seeder
-const runSeeder = async (): Promise<void> => {
+export const runSeeder = async (): Promise<void> => {
   try {
     await connectDB();
     await cleanDB();
     await seedDB();
-    
+
     logger.info('Seeding complete!');
     process.exit(0);
   } catch (error) {
@@ -196,4 +196,4 @@ const runSeeder = async (): Promise<void> => {
 };
 
 // Run the seeder
-runSeeder();
+// runSeeder();

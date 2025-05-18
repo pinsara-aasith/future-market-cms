@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { Card } from '../../components/ui/Card';
 import { useAuth } from '../../context/AuthContext';
-import { getUserComplaints } from '../../services/complaintService';
+import { getAllComplaints, getMyComplaints } from '../../services/complaintService';
 import { Complaint, ComplaintStatus } from '../../types';
 
 const StatusIcon: React.FC<{ status: ComplaintStatus }> = ({ status }) => {
@@ -32,8 +32,11 @@ export const DashboardPage: React.FC = () => {
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
-        if (user) {
-          const data = await getUserComplaints();
+        if (user?.role == 'admin' || user?.role == 'branch_supervisor') {
+          const data = await getAllComplaints();
+          setComplaints(data);
+        } else {
+          const data = await getMyComplaints();
           setComplaints(data);
         }
       } catch (error) {
@@ -45,6 +48,8 @@ export const DashboardPage: React.FC = () => {
     
     fetchComplaints();
   }, [user]);
+
+  console.log(complaints)
   
   const counters = {
     total: complaints.length,
@@ -172,7 +177,7 @@ export const DashboardPage: React.FC = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-neutral-200">
                   {recentComplaints.map((complaint) => (
-                    <tr key={complaint.id}>
+                    <tr key={complaint._id}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <Calendar size={16} className="text-neutral-400 mr-2" />
@@ -195,7 +200,7 @@ export const DashboardPage: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                        <a href={`/complaints/${complaint.id}`} className="text-primary-600 hover:text-primary-800">
+                        <a href={`/complaints/${complaint._id}/view`} className="text-primary-600 hover:text-primary-800">
                           View Details
                         </a>
                       </td>
