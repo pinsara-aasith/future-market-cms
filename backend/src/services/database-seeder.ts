@@ -58,19 +58,19 @@ const seedDB = async (): Promise<void> => {
     const branches = await Branch.insertMany([
       {
         branchCode: 'BR001',
-        branchName: 'Main Branch',
+        branchName: 'Rathmalana',
         address: '123 Main St, City',
         phoneNo: '1234567891'
       },
       {
         branchCode: 'BR002',
-        branchName: 'North Branch',
+        branchName: 'Kadawatha',
         address: '456 North St, City',
         phoneNo: '1234567892'
       },
       {
         branchCode: 'BR003',
-        branchName: 'South Branch',
+        branchName: 'Kirulapana',
         address: '789 South St, City',
         phoneNo: '1234567893'
       }
@@ -156,20 +156,20 @@ const seedDB = async (): Promise<void> => {
         branchCode: 'BR001',
         createdBy: customerUsers[0]._id,
         status: 'pending',
-        actionsTaken: ''
+        actionsTaken: []
       },
       {
         description: 'Out of stock items not marked properly',
         branchCode: 'BR002',
         createdBy: customerUsers[1]._id,
         status: 'in_progress',
-        actionsTaken: 'Investigating the issue'
+        actionsTaken: []
       },
       {
         description: 'Anonymous complaint about cleanliness',
         branchCode: 'BR003',
         status: 'pending',
-        actionsTaken: ''
+        actionsTaken: []
       }
     ]);
     logger.info(`Created ${complaints.length} complaints`);
