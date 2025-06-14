@@ -9,8 +9,8 @@ import mongoose from 'mongoose';
  */
 export const registerCustomer = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { fullName, email, phoneNo, password, eCardHolder = false } = req.body;
-
+    const { fullName, email, phoneNo, password } = req.body.user;
+    const { eCardHolder } = req.body.eCardHolder || false;
     // Check if email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {

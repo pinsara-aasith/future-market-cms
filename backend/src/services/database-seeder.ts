@@ -84,21 +84,21 @@ const seedDB = async (): Promise<void> => {
         email: 'supervisor1@supermarket.com',
         password:password,
         phoneNo: '1234567894',
-        role: 'branch_supervisor'
+        role: 'branchSupervisor'
       },
       {
         fullName: 'Supervisor Two',
         email: 'supervisor2@supermarket.com',
         password: password,
         phoneNo: '1234567895',
-        role: 'branch_supervisor'
+        role: 'branchSupervisor'
       },
       {
         fullName: 'Supervisor Three',
         email: 'supervisor3@supermarket.com',
         password: password,
         phoneNo: '1234567896',
-        role: 'branch_supervisor'
+        role: 'branchSupervisor'
       }
     ]);
 
@@ -188,7 +188,7 @@ export const runSeeder = async (): Promise<void> => {
     await seedDB();
 
     logger.info('Seeding complete!');
-    process.exit(0);
+    // process.exit(0);
   } catch (error) {
     logger.error('Error running seeder:', error);
     process.exit(1);

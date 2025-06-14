@@ -85,6 +85,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
+    console.log('Login request:', req.body);
 
     // Find user by email
     const user = await User.findOne({ email });
@@ -95,7 +96,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     // Check password
     const isPasswordValid = await user.comparePassword(password);
-
 
     if (!isPasswordValid) {
       res.status(401).json({ message: 'Invalid credentials' });

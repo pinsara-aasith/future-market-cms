@@ -42,5 +42,5 @@ export class CustomError extends Error {
 // Async handler to avoid try-catch blocks in route handlers
 export const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) => 
   (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    Promise.resolve(fn(req, res, next)).catch(next);
+    return Promise.resolve(fn(req, res, next)).catch(next);
   };

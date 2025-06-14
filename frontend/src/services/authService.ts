@@ -12,10 +12,12 @@ export const registerUser = async (userData: User): Promise<AuthResponse> => {
 };
 
 export const registerCustomer = async (userData: User, eCardHolder: boolean): Promise<AuthResponse> => {
+  console.log('Registering customer with data:', userData, 'eCardHolder:', eCardHolder);
   const response = await api.post('/customer/register', {
-    ...userData,
+    user: userData,
     eCardHolder
   });
+  console.log('Register customer response:', response);
   return response.data;
 };
 

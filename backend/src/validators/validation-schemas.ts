@@ -108,16 +108,16 @@ export const complaintValidations = {
 
 export const customerValidations = {
   create: [
-    body('fullName')
+    body('user.fullName')
       .notEmpty().withMessage('Full name is required')
       .isString().withMessage('Full name must be a string'),
-    body('email')
+    body('user.email')
       .notEmpty().withMessage('Email is required')
       .isEmail().withMessage('Please provide a valid email'),
-    body('password')
+    body('user.password')
       .notEmpty().withMessage('Password is required')
       .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
-    body('phoneNo')
+    body('user.phoneNo')
       .notEmpty().withMessage('Phone number is required')
       .matches(/^[0-9+\-\s]+$/).withMessage('Please provide a valid phone number'),
   ],

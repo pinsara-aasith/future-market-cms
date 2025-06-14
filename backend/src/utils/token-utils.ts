@@ -22,7 +22,7 @@ export const generateToken = (userId: string | Types.ObjectId, role: string): st
   return jwt.sign(
     payload,
     process.env.JWT_SECRET || 'fallback_secret',
-    { expiresIn: process.env.JWT_EXPIRATION || '1d' }
+    { expiresIn: process.env.JWT_EXPIRATION ? String(process.env.JWT_EXPIRATION) : '1d' } as jwt.SignOptions
   );
 };
 

@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const baseURL = 'http://localhost:3344/api';
+const port = import.meta.env.VITE_BACKEND_PORT || 5001;
+
+const baseURL = `http://localhost:${port}/api`;
 
 const api = axios.create({
   baseURL,
@@ -26,7 +28,7 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
+    console.log('Response error:', error);
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       

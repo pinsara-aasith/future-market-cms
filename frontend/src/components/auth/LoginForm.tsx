@@ -5,6 +5,7 @@ import { LogIn } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 import { Input } from '../ui/Input';
+import { PasswordInput } from '../ui/PasswordInput';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 
@@ -58,10 +59,10 @@ export const LoginForm: React.FC = () => {
               value: /^\S+@\S+\.\S+$/,
               message: 'Please enter a valid email address',
             }
-          })}
+          })} 
         />
 
-        <Input
+        <PasswordInput
           label="Password"
           type="password"
           placeholder="••••••••"
