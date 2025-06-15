@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CustomerPulse - Complaint Update Notification</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7fb; font-size: 18px; line-height: 1.8;">
+  <div style="max-width: 600px; margin: 40px auto; background-color: #cee7f3; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 40px 30px;">
+
+    <!-- Heading -->
+    <h2 style="color: #2b6cb0; text-align: center; margin-bottom: 24px; font-size: 28px;">Update on Your Complaint</h2>
+
+    <!-- Greeting -->
+    <p style="color: #333; font-size: 18px;">
+      Dear <strong>{customerName}</strong>,
+    </p>
+
+    <!-- Message -->
+    <p style="color: #333; font-size: 18px;">
+      We wanted to let you know that an action has been taken regarding your complaint submitted to <strong>CustomerPulse</strong>.
+    </p>
+
+    <!-- Details Table -->
+    <table style="width: 100%; border-collapse: collapse; margin-top: 25px;">
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Complaint ID:</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee;">{complaintId}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Description:</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee;">{complaintDescription}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Date Submitted:</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee;">{complaintDate}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Status:</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee;">{complaintStatus}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Action Taken:</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee;">{actionTaken}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Date of Action:</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee;">{actionDate}</td>
+      </tr>
+    </table>
+
+    <!-- Footer -->
+    <div style="text-align: center; color: #565656; font-size: 15px; margin-top: 40px;">
+      Thank you for using <strong>CustomerPulse</strong>.<br><br>
+      Best regards,<br>
+      The CustomerPulse Team
+    </div>
+  </div>
+</body>
+</html>
+
