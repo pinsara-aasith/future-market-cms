@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 
 export enum UserRole {
   CUSTOMER = 'customer',
-  BRANCH_SUPERVISOR = 'branchSupervisor',
+  BRANCH_SUPERVISOR = 'branch_supervisor',
   ADMIN = 'admin'
 }
 

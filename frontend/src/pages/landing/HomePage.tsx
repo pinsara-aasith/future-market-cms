@@ -16,7 +16,7 @@ export const HomePage: React.FC = () => {
       <header className="bg-white shadow-sm py-4 px-6 sm:px-10">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center">
-            <svg
+            {/* <svg
               className="w-8 h-8 text-primary-600 mr-2"
               fill="none"
               stroke="currentColor"
@@ -29,8 +29,9 @@ export const HomePage: React.FC = () => {
                 strokeWidth={2}
                 d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
               />
-            </svg>
-            <h1 className="text-xl font-bold text-primary-700">SuperMarket CMS</h1>
+            </svg> */}
+            <img src="/design.png" alt="CustomerPulse Logo" className="w-8 h-8 mr-2" />
+            <h1 className="text-xl font-bold text-primary-700">Customer Pulse</h1>
           </div>
           
           {/* Desktop Menu */}
@@ -362,7 +363,7 @@ export const HomePage: React.FC = () => {
             <Link to="/register">
               <Button 
                 size="lg" 
-                className="bg-white text-primary-700 hover:bg-neutral-100"
+                className="bg-white !text-primary-700 hover:bg-neutral-100"
               >
                 Create Account
               </Button>

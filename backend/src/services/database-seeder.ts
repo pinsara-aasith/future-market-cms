@@ -84,21 +84,21 @@ const seedDB = async (): Promise<void> => {
         email: 'supervisor1@supermarket.com',
         password:password,
         phoneNo: '1234567894',
-        role: 'branchSupervisor'
+        role: 'branch_supervisor'
       },
       {
         fullName: 'Supervisor Two',
         email: 'supervisor2@supermarket.com',
         password: password,
         phoneNo: '1234567895',
-        role: 'branchSupervisor'
+        role: 'branch_supervisor'
       },
       {
         fullName: 'Supervisor Three',
         email: 'supervisor3@supermarket.com',
         password: password,
         phoneNo: '1234567896',
-        role: 'branchSupervisor'
+        role: 'branch_supervisor'
       }
     ]);
 
