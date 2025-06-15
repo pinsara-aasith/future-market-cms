@@ -8,6 +8,8 @@ import { Card } from '../../components/ui/Card';
 import { useAuth } from '../../context/AuthContext';
 import { getAllComplaints, getBranchComplaints, getMyComplaints } from '../../services/complaintService';
 import { Complaint, ComplaintStatus } from '../../types';
+import { Button } from '../../components/ui/Button';
+import { ReportModal } from '../../components/reports/ReportModal';
 
 const StatusIcon: React.FC<{ status: ComplaintStatus }> = ({ status }) => {
   switch (status) {
@@ -28,6 +30,8 @@ export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [loading, setLoading] = useState(true);
+  const [ isOpen, setOpen ] = useState(false);
+  const isPrivilegedUser = user?.role === 'admin' || user?.role === 'branch_supervisor';
   
   useEffect(() => {
     const fetchComplaints = async () => {
@@ -234,6 +238,15 @@ export const DashboardPage: React.FC = () => {
           </Card>
         )}
       </div>
+      {isPrivilegedUser &&
+      (<div>
+        <Button 
+          onClick={() => setOpen(true) }
+        >
+          Generate Reports
+        </Button>
+        <ReportModal isOpen={isOpen} onClose={() => setOpen(false)} />
+      </div>)}
     </DashboardLayout>
   );
 };
