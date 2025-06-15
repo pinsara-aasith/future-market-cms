@@ -21,6 +21,8 @@ dotenv.config();
 // Create Express application
 const app: Application = express();
 
+app.use(express.static('public'));
+
 // Middleware
 app.use(helmet());
 app.use(cors());

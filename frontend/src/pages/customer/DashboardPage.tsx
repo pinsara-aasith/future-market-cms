@@ -32,6 +32,7 @@ export const DashboardPage: React.FC = () => {
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
+        console.log('Fetching complaints for user:', user);
         if (user?.role == 'admin' || user?.role == 'branch_supervisor') {
           const data = await getAllComplaints();
           setComplaints(data);

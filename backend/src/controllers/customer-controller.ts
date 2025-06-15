@@ -3,6 +3,8 @@ import { Request, Response } from 'express';
 import User from '../models/user-model';
 import Customer, { ICustomer } from '../models/customer-model';
 import mongoose from 'mongoose';
+import { sendMail } from '../utils/mailer';
+import fs from 'fs';
 
 /**
  * Register a new customer
@@ -48,6 +50,17 @@ export const registerCustomer = async (req: Request, res: Response): Promise<voi
           role: user.role
         }
       }
+    });
+
+    // Send welcome email    
+    let htmlContent = fs.readFileSync("./src/utils/email-templates/welcome-email.html", 'utf8');
+
+    sendMail(
+      user.email,
+      'Welcome to CustomerPulse!',
+      htmlContent
+    ).catch((error) => {
+      console.error('Error sending welcome email:', error);
     });
   } catch (error) {
     res.status(500).json({ message: 'Error registering customer', error });
