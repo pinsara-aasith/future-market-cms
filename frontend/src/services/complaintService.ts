@@ -21,7 +21,7 @@ export const getUserComplaints = async (): Promise<Complaint[]> => {
   return response.data?.complaints;
 };
 
-export const getBranchComplaints = async (branchCode: string): Promise<Complaint[]> => {
+export const getBranchComplaints = async (branchCode: string = ''): Promise<Complaint[]> => {
   const response = await api.get(`/complaint/branch/${branchCode}`);
   return response.data?.complaints;
 };

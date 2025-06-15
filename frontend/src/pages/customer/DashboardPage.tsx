@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { Card } from '../../components/ui/Card';
 import { useAuth } from '../../context/AuthContext';
-import { getAllComplaints, getMyComplaints } from '../../services/complaintService';
+import { getAllComplaints, getBranchComplaints, getMyComplaints } from '../../services/complaintService';
 import { Complaint, ComplaintStatus } from '../../types';
 
 const StatusIcon: React.FC<{ status: ComplaintStatus }> = ({ status }) => {
@@ -32,11 +32,14 @@ export const DashboardPage: React.FC = () => {
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
-        console.log('Fetching complaints for user:', user);
-        if (user?.role == 'admin' || user?.role == 'branch_supervisor') {
+        if (user?.role == 'admin') {
           const data = await getAllComplaints();
           setComplaints(data);
-        } else {
+        } else if (user?.role === 'branch_supervisor') {
+          const data = await getBranchComplaints(user?.branchCode);
+          setComplaints(data);
+        }
+        else {
           const data = await getMyComplaints();
           setComplaints(data);
         }
@@ -73,7 +76,7 @@ export const DashboardPage: React.FC = () => {
       </div>
       
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 gap-4 mb-8 md:grid-cols-2 lg:grid-cols-4">
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -81,11 +84,11 @@ export const DashboardPage: React.FC = () => {
         >
           <Card className="border-l-4 border-primary-500">
             <div className="flex items-center">
-              <div className="bg-primary-100 rounded-md p-3 mr-4">
+              <div className="p-3 mr-4 rounded-md bg-primary-100">
                 <FileText size={24} className="text-primary-600" />
               </div>
               <div>
-                <p className="text-sm text-neutral-500 mb-1">Total Complaints</p>
+                <p className="mb-1 text-sm text-neutral-500">Total Complaints</p>
                 <p className="text-2xl font-bold text-neutral-800">{counters.total}</p>
               </div>
             </div>
@@ -99,11 +102,11 @@ export const DashboardPage: React.FC = () => {
         >
           <Card className="border-l-4 border-warning-500">
             <div className="flex items-center">
-              <div className="bg-warning-100 rounded-md p-3 mr-4">
+              <div className="p-3 mr-4 rounded-md bg-warning-100">
                 <Clock size={24} className="text-warning-600" />
               </div>
               <div>
-                <p className="text-sm text-neutral-500 mb-1">Pending</p>
+                <p className="mb-1 text-sm text-neutral-500">Pending</p>
                 <p className="text-2xl font-bold text-neutral-800">{counters.pending}</p>
               </div>
             </div>
@@ -117,11 +120,11 @@ export const DashboardPage: React.FC = () => {
         >
           <Card className="border-l-4 border-accent-500">
             <div className="flex items-center">
-              <div className="bg-accent-100 rounded-md p-3 mr-4">
+              <div className="p-3 mr-4 rounded-md bg-accent-100">
                 <Activity size={24} className="text-accent-600" />
               </div>
               <div>
-                <p className="text-sm text-neutral-500 mb-1">In Progress</p>
+                <p className="mb-1 text-sm text-neutral-500">In Progress</p>
                 <p className="text-2xl font-bold text-neutral-800">{counters.inProgress}</p>
               </div>
             </div>
@@ -135,11 +138,11 @@ export const DashboardPage: React.FC = () => {
         >
           <Card className="border-l-4 border-success-500">
             <div className="flex items-center">
-              <div className="bg-success-100 rounded-md p-3 mr-4">
+              <div className="p-3 mr-4 rounded-md bg-success-100">
                 <CheckCircle size={24} className="text-success-600" />
               </div>
               <div>
-                <p className="text-sm text-neutral-500 mb-1">Resolved</p>
+                <p className="mb-1 text-sm text-neutral-500">Resolved</p>
                 <p className="text-2xl font-bold text-neutral-800">{counters.resolved}</p>
               </div>
             </div>
@@ -149,29 +152,29 @@ export const DashboardPage: React.FC = () => {
       
       {/* Recent Complaints */}
       <div className="mb-8">
-        <h2 className="text-lg font-semibold text-neutral-700 mb-4">Recent Complaints</h2>
+        <h2 className="mb-4 text-lg font-semibold text-neutral-700">Recent Complaints</h2>
         
         {loading ? (
-          <div className="text-center py-8">
-            <div className="inline-block w-6 h-6 border-2 border-neutral-300 border-t-primary-500 rounded-full animate-spin"></div>
+          <div className="py-8 text-center">
+            <div className="inline-block w-6 h-6 border-2 rounded-full border-neutral-300 border-t-primary-500 animate-spin"></div>
             <p className="mt-2 text-neutral-500">Loading your complaints...</p>
           </div>
         ) : recentComplaints.length > 0 ? (
-          <div className="bg-white rounded-lg shadow-card overflow-hidden">
+          <div className="overflow-hidden bg-white rounded-lg shadow-card">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-neutral-200">
                 <thead className="bg-neutral-50">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-neutral-500">
                       Date
                     </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-neutral-500">
                       Branch
                     </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-neutral-500">
                       Status
                     </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-neutral-500">
                       Actions
                     </th>
                   </tr>
@@ -181,7 +184,7 @@ export const DashboardPage: React.FC = () => {
                     <tr key={complaint._id}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <Calendar size={16} className="text-neutral-400 mr-2" />
+                          <Calendar size={16} className="mr-2 text-neutral-400" />
                           <span className="text-sm text-neutral-600">
                             {format(new Date(complaint.createdAt), 'MMM dd, yyyy')}
                           </span>
@@ -200,7 +203,7 @@ export const DashboardPage: React.FC = () => {
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                      <td className="px-6 py-4 text-sm whitespace-nowrap text-neutral-500">
                         <a href={`/complaints/${complaint._id}/view`} className="text-primary-600 hover:text-primary-800">
                           View Details
                         </a>
@@ -213,17 +216,17 @@ export const DashboardPage: React.FC = () => {
           </div>
         ) : (
           <Card>
-            <div className="text-center py-8">
-              <div className="w-16 h-16 mx-auto bg-neutral-100 rounded-full flex items-center justify-center mb-4">
+            <div className="py-8 text-center">
+              <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-neutral-100">
                 <FileText size={24} className="text-neutral-400" />
               </div>
-              <h3 className="text-lg font-medium text-neutral-700 mb-2">No complaints yet</h3>
-              <p className="text-neutral-500 mb-4">
+              <h3 className="mb-2 text-lg font-medium text-neutral-700">No complaints yet</h3>
+              <p className="mb-4 text-neutral-500">
                 You haven't submitted any complaints. When you do, they'll appear here.
               </p>
               <a 
                 href="/complaints/new" 
-                className="inline-block px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
+                className="inline-block px-4 py-2 text-white transition-colors rounded-md bg-primary-600 hover:bg-primary-700"
               >
                 Submit a Complaint
               </a>

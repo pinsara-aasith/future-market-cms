@@ -34,7 +34,7 @@ export const ComplaintsPage: React.FC = () => {
             complaintData = await getAllComplaints();
             
           } else if (user.role === 'branch_supervisor') {
-            complaintData = await getAllComplaints();
+            complaintData = await getBranchComplaints(user.branchCode);
           } else {
             complaintData = await getUserComplaints();
           }
@@ -63,8 +63,7 @@ export const ComplaintsPage: React.FC = () => {
         if (user.role === 'admin') {
           complaintData = await getAllComplaints();
         } else if (user.role === 'branch_supervisor') {
-          const branchCode = 'example-branch'; // Replace with actual branch code
-          complaintData = await getBranchComplaints(branchCode);
+          complaintData = await getBranchComplaints(user.branchCode);
         } else {
           complaintData = await getUserComplaints();
         }
@@ -95,7 +94,7 @@ export const ComplaintsPage: React.FC = () => {
   return (
     <DashboardLayout>
       <Toaster position="top-right" />
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div className="flex flex-col mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-neutral-800">Complaints</h1>
           <p className="text-neutral-500">
@@ -114,7 +113,7 @@ export const ComplaintsPage: React.FC = () => {
       
       {/* Filters */}
       <Card className="mb-6">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center justify-between mb-4">
           <h2 className="font-medium text-neutral-700">Search and Filter</h2>
           <Button 
             variant="ghost" 
@@ -139,7 +138,7 @@ export const ComplaintsPage: React.FC = () => {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4"
+            className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2"
           >
             <Select
               label="Status"
@@ -169,7 +168,7 @@ export const ComplaintsPage: React.FC = () => {
               fullWidth
             />
             
-            <div className="md:col-span-2 flex justify-end">
+            <div className="flex justify-end md:col-span-2">
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -187,8 +186,8 @@ export const ComplaintsPage: React.FC = () => {
       {/* Complaints List */}
       <div>
         {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block w-8 h-8 border-4 border-neutral-300 border-t-primary-500 rounded-full animate-spin mb-4"></div>
+          <div className="py-12 text-center">
+            <div className="inline-block w-8 h-8 mb-4 border-4 rounded-full border-neutral-300 border-t-primary-500 animate-spin"></div>
             <p className="text-neutral-500">Loading complaints...</p>
           </div>
         ) : filteredComplaints.length > 0 ? (
@@ -202,12 +201,12 @@ export const ComplaintsPage: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-card p-12 text-center">
-            <div className="w-20 h-20 mx-auto bg-neutral-100 rounded-full flex items-center justify-center mb-4">
+          <div className="p-12 text-center bg-white rounded-lg shadow-card">
+            <div className="flex items-center justify-center w-20 h-20 mx-auto mb-4 rounded-full bg-neutral-100">
               <FileText size={32} className="text-neutral-400" />
             </div>
-            <h3 className="text-xl font-medium text-neutral-700 mb-2">No complaints found</h3>
-            <p className="text-neutral-500 max-w-md mx-auto mb-6">
+            <h3 className="mb-2 text-xl font-medium text-neutral-700">No complaints found</h3>
+            <p className="max-w-md mx-auto mb-6 text-neutral-500">
               {searchTerm || statusFilter !== 'all' || branchFilter !== 'all'
                 ? 'No complaints match your current filters. Try adjusting your search criteria.'
                 : 'There are no complaints to display. Create a new complaint to get started.'}

@@ -14,6 +14,7 @@ export interface IUser extends Document {
   password: string;
   phoneNo: string;
   role: UserRole;
+  branchCode?: string | null;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 

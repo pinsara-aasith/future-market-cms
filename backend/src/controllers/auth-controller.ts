@@ -1,27 +1,23 @@
 // src/controllers/auth-controller.ts
-import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import User, { UserRole, IUser } from '../models/user-model';
-import Customer from '../models/customer-model';
-import { logger } from '../utils/logger';
+import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import User, { UserRole, IUser } from "../models/user-model";
+import Customer from "../models/customer-model";
+import { logger } from "../utils/logger";
+import BranchSupervisor from "../models/branch-supervisor-model";
 
 // Token generation helper
 const generateToken = (user: IUser): string => {
-  return jwt.sign(
-    { id: user.id },
-    process.env.JWT_SECRET as string,
-    { expiresIn: '24h' }
-  );
+  return jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
+    expiresIn: "24h",
+  });
 };
-console.log(process.env.JWT_REFRESH_SECRET)
+
 // Token refresh helper
 const generateRefreshToken = (user: IUser): string => {
-  return jwt.sign(
-    { id: user.id },
-    process.env.JWT_REFRESH_SECRET as string,
-    { expiresIn: '7d' }
-  );
+  return jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET as string, {
+    expiresIn: "7d",
+  });
 };
 
 /**
@@ -34,7 +30,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      res.status(400).json({ message: 'User already exists with this email' });
+      res.status(400).json({ message: "User already exists with this email" });
       return;
     }
 
@@ -44,7 +40,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       email,
       password,
       phoneNo,
-      role: UserRole.CUSTOMER
+      role: UserRole.CUSTOMER,
     });
 
     await user.save();
@@ -52,7 +48,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     // Create customer profile
     const customer = new Customer({
       user: user._id,
-      eCardHolder: !!eCardHolder
+      eCardHolder: !!eCardHolder,
     });
 
     await customer.save();
@@ -62,20 +58,20 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const refreshToken = generateRefreshToken(user);
 
     res.status(201).json({
-      message: 'User registered successfully',
+      message: "User registered successfully",
       user: {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
         phoneNo: user.phoneNo,
-        role: user.role
+        role: user.role,
       },
       token,
-      refreshToken
+      refreshToken,
     });
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ message: 'Error during registration', error });
+    console.error(error);
+    res.status(500).json({ message: "Error during registration", error });
   }
 };
 
@@ -85,49 +81,44 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
-    console.log('Login request:', req.body);
 
-    // Find user by email
     const user = await User.findOne({ email });
-    if (!user) {
-      res.status(401).json({ message: 'Invalid credentials' });
+    if (!user || !(await user.comparePassword(password))) {
+      res.status(401).json({ message: "Invalid credentials" });
       return;
     }
 
-    // Check password
-    const isPasswordValid = await user.comparePassword(password);
+    const [token, refreshToken] = await Promise.all([
+      generateToken(user),
+      generateRefreshToken(user),
+    ]);
 
-    if (!isPasswordValid) {
-      res.status(401).json({ message: 'Invalid credentials' });
-      return;
+    // Get branch code if user is a branch supervisor
+    let branchCode: string | null = null;
+    if (user.role === UserRole.BRANCH_SUPERVISOR) {
+      const supervisor = await BranchSupervisor.findOne({ user: user._id })
+        .select("branchCode")
+        .lean();
+
+      branchCode = supervisor?.branchCode ?? null;
     }
-
-    // Generate tokens
-    console.log(user.toJSON(),isPasswordValid)
-
-    const token = generateToken(user);
-    console.log(user.toJSON(),isPasswordValid)
-
-    const refreshToken = generateRefreshToken(user);
-
-    console.log(user.toJSON(),isPasswordValid)
-
 
     res.json({
-      message: 'Login successful',
+      message: "Login successful",
       user: {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
         phoneNo: user.phoneNo,
-        role: user.role
+        role: user.role,
+        branchCode,
       },
       token,
-      refreshToken
+      refreshToken,
     });
-  } catch (error) {
-    logger.error(error)
-    res.status(500).json({ message: 'Error during login', error });
+  } catch (err) {
+    logger.error(err);
+    res.status(500).json({ message: "Error during login", error: err });
   }
 };
 
@@ -137,28 +128,34 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const logout = async (req: Request, res: Response): Promise<void> => {
   // Note: In a real implementation, you might want to invalidate tokens
   // by adding them to a blacklist or using Redis for token management
-  res.json({ message: 'Logged out successfully' });
+  res.json({ message: "Logged out successfully" });
 };
 
 /**
  * Refresh access token using refresh token
  */
-export const refreshToken = async (req: Request, res: Response): Promise<void> => {
+export const refreshToken = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
-      res.status(400).json({ message: 'Refresh token is required' });
+      res.status(400).json({ message: "Refresh token is required" });
       return;
     }
 
     // Verify refresh token
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as { id: string };
-    
+    const decoded = jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET as string
+    ) as { id: string };
+
     // Find user
     const user = await User.findById(decoded.id);
     if (!user) {
-      res.status(401).json({ message: 'Invalid refresh token' });
+      res.status(401).json({ message: "Invalid refresh token" });
       return;
     }
 
@@ -166,21 +163,24 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
     const newToken = generateToken(user);
 
     res.json({
-      token: newToken
+      token: newToken,
     });
   } catch (error) {
-    res.status(401).json({ message: 'Invalid or expired refresh token' });
+    res.status(401).json({ message: "Invalid or expired refresh token" });
   }
 };
 
 /**
  * Get current authenticated user info
  */
-export const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
+export const getCurrentUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     // User is attached from auth middleware
     if (!req.user) {
-      res.status(401).json({ message: 'Not authenticated' });
+      res.status(401).json({ message: "Not authenticated" });
       return;
     }
 
@@ -190,10 +190,11 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
         fullName: req.user.fullName,
         email: req.user.email,
         phoneNo: req.user.phoneNo,
-        role: req.user.role
-      }
+        role: req.user.role,
+        branchCode: req.user.branchCode ?? null,
+      },
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching user information', error });
+    res.status(500).json({ message: "Error fetching user information", error });
   }
 };

@@ -7,6 +7,7 @@ export interface User {
   phoneNo: string;
   password?: string;
   role: UserRole;
+  branchCode?: string;
 }
 
 export interface Customer {

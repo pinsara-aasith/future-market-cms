@@ -1,7 +1,8 @@
 // src/middleware/auth-middleware.ts
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { IUser } from '../models/user-model';
+import { IUser, UserRole } from '../models/user-model';
+import BranchSupervisor from '../models/branch-supervisor-model';
 import User from '../models/user-model';
 
 // Extend Express Request interface to include user
@@ -49,8 +50,21 @@ export const authenticate = async (
       return;
     }
     
+    // Get branch code if user is a branch supervisor
+    let branchCode: string | null = null;
+    if (user.role === UserRole.BRANCH_SUPERVISOR) {
+
+      const supervisor = await BranchSupervisor
+        .findOne({ user: user._id })
+        .select('branchCode')
+        .lean();
+    
+      branchCode = supervisor?.branchCode ?? null;
+    }
+    
     // Attach user and token to request object
     req.user = user;
+    req.user.branchCode = branchCode;
     req.token = token;
     
     next();

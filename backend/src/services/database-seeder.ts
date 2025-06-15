@@ -82,7 +82,7 @@ const seedDB = async (): Promise<void> => {
       {
         fullName: 'Supervisor One',
         email: 'supervisor1@supermarket.com',
-        password:password,
+        password: password,
         phoneNo: '1234567894',
         role: 'branch_supervisor'
       },
