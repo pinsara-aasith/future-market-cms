@@ -56,3 +56,43 @@ export interface AuthResponse {
   token: string;
   refreshToken: string;
 }
+
+export interface BranchReport {
+  branch_code: string;
+  branch_name: string;
+  total_complaints: number;
+  resolved: number;
+  pending: number;
+  in_progress: number;
+  anonymous_complaints_ratio: string;
+  most_frequent_complainers: Complainer[];
+}
+
+export interface OverallReport {
+  total_complaints: number;
+  resolved: number;
+  pending: number;
+  in_progress: number;
+  anonymous_complaints_ratio: string;
+  top_branches_by_complaints: BranchComplaintCount[];
+  branch_with_highest_pending: BranchPendingInfo;
+  most_frequent_complainers: Complainer[];
+}
+
+export interface Complainer {
+  user_id: string;
+  name: string;
+  count: number;
+}
+
+export interface BranchComplaintCount {
+  branch_code: string;
+  branch_name: string;
+  count: number;
+}
+
+export interface BranchPendingInfo {
+  branch_code: string;
+  branch_name: string;
+  pending: number;
+}
