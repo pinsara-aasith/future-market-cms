@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-type ButtonVariant = 'primary' | 'secondary' | 'accent' | 'outline' | 'ghost' | 'danger';
+type ButtonVariant = 'primary' | 'secondary' | 'accent' | 'outline' | 'ghost' | 'danger' | 'success';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -19,6 +19,7 @@ const variantStyles: Record<ButtonVariant, string> = {
   outline: 'bg-transparent border border-neutral-300 text-neutral-700 hover:bg-neutral-50 focus:ring-primary-500',
   ghost: 'bg-transparent text-neutral-700 hover:bg-neutral-100 focus:ring-primary-500',
   danger: 'bg-error-600 text-white hover:bg-error-700 focus:ring-error-500',
+  success: 'bg-success-600 text-white hover:bg-success-700 focus:ring-success-500',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
