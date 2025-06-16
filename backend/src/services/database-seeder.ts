@@ -188,10 +188,8 @@ export const runSeeder = async (): Promise<void> => {
     await seedDB();
 
     logger.info('Seeding complete!');
-    // process.exit(0);
   } catch (error) {
     logger.error('Error running seeder:', error);
-    process.exit(1);
   }
 };
 

@@ -14,7 +14,6 @@ import reportRoutes from './routes/report-routes';
 import { errorHandler } from './middleware/error-handler';
 import { setupAdminUser } from './utils/admin-setup';
 import { logger } from './utils/logger';
-import { runSeeder } from './services/database-seeder';
 
 // Load environment variables
 dotenv.config();
