@@ -1,4 +1,3 @@
-// src/controllers/complaint-controller.ts
 import { Request, Response } from 'express';
 import Complaint, { ComplaintStatus } from '../models/complaint-model';
 import Branch from '../models/branch-model';
@@ -137,7 +136,6 @@ export const createAnonymousComplaint = async (req: Request, res: Response): Pro
  */
 export const getAllComplaints = async (req: Request, res: Response): Promise<void> => {
   try {
-    // Query parameters for filtering
     const { status, branchCode } = req.query;
     const filter: any = {};
     
@@ -230,7 +228,6 @@ export const getComplaintById = async (req: Request, res: Response): Promise<voi
       return;
     }
     
-    // Full complaint details
     res.json({ complaint });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching complaint', error });
@@ -317,7 +314,6 @@ export const addActionToComplaint = async (req: Request, res: Response): Promise
       }
     }
     
-    // Add the action to the actionsTaken array
     complaint.actionsTaken.push(action);
     await complaint.save();
     

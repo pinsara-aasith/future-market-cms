@@ -4,28 +4,22 @@ import branchModel from '../models/branch-model';
 
 export const getReport = async (req: Request, res: Response) => {
   try {
-    // Extract and parse dates from query params
     const startDate = req.query.start ? new Date(req.query.start as string) : null;
     const endDate = req.query.end ? new Date(req.query.end as string) : null;
     const branchCode = req.query.branchCode ? (req.query.branchCode as string) : null;
 
-    // Validate dates
     if (!startDate || !endDate || isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       return res.status(400).json({ message: 'Invalid or missing start/end date query parameters.' });
     }
 
-    // Validate date order
     if (startDate > endDate) {
       return res.status(400).json({ message: 'Start date cannot be after end date.' });
     }
 
-    // Generate summary
     if (branchCode) {
-      // Branch-specific summary
       const branchSummary = await generateBranchSummary(startDate, endDate, branchCode);
       return res.json(branchSummary);
     } else {
-      // Overall summary
       const summary = await generateSummary(startDate, endDate);
       return res.json(summary);
     }
@@ -36,7 +30,6 @@ export const getReport = async (req: Request, res: Response) => {
 };
 
 export const generateSummary = async (startDate: Date, endDate: Date) => {
-  // Base filter for date range
   const dateFilter = {
     createdAt: {
       $gte: startDate,
@@ -44,7 +37,6 @@ export const generateSummary = async (startDate: Date, endDate: Date) => {
     },
   };
 
-  // Counts with date filter
   const total = await Complaint.countDocuments(dateFilter);
   const resolved = await Complaint.countDocuments({ ...dateFilter, status: 'resolved' });
   const pending = await Complaint.countDocuments({ ...dateFilter, status: 'pending' });
@@ -152,7 +144,6 @@ export const generateBranchSummary = async (startDate: Date, endDate: Date, bran
     baseFilter.branchCode = branchCode;
   }
 
-  // Counts with base filter (date + optional branch)
   const total = await Complaint.countDocuments(baseFilter);
   const resolved = await Complaint.countDocuments({ ...baseFilter, status: 'resolved' });
   const pending = await Complaint.countDocuments({ ...baseFilter, status: 'pending' });
