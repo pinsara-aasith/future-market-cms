@@ -1,4 +1,3 @@
-// src/controllers/branch-supervisor-controller.ts
 import { Request, Response } from 'express';
 import User, { UserRole } from '../models/user-model';
 import BranchSupervisor from '../models/branch-supervisor-model';

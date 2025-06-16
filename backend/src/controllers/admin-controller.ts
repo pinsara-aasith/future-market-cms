@@ -1,7 +1,5 @@
-// src/controllers/admin-controller.ts
 import { Request, Response } from 'express';
 import User from '../models/user-model';
-import mongoose from 'mongoose';
 
 /**
  * Get all admins (admin only)
@@ -45,7 +43,6 @@ export const createAdmin = async (req: Request, res: Response): Promise<void> =>
 
     await admin.save();
 
-    // Remove password from response
     const adminResponse = admin.toObject();
     // @ts-ignore
     delete adminResponse.password;
@@ -122,10 +119,7 @@ export const deleteAdmin = async (req: Request, res: Response): Promise<void> =>
  * Get dashboard statistics (admin only)
  */
 export const getDashboardStats = async (req: Request, res: Response): Promise<void> => {
-  try {
-    // This would typically aggregate data from various collections
-    // Here's an example implementation that you would expand based on your needs
-    
+  try {    
     // Count users by role
     const userStats = await User.aggregate([
       {

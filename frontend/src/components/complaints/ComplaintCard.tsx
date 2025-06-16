@@ -25,9 +25,9 @@ export const ComplaintCard: React.FC<ComplaintCardProps> = ({ complaint, onUpdat
   
   const canManageComplaint = user && (
     user.role === 'admin' || 
-    (user.role === 'branch_supervisor' && user._id === complaint.branchCode)
+    (user.role === 'branch_supervisor' && user.branchCode === complaint.branchCode)
   );
-  
+
   const getStatusBadge = (status: ComplaintStatus) => {
     switch (status) {
       case 'pending':

@@ -1,8 +1,12 @@
-// src/controllers/complaint-controller.ts
 import { Request, Response } from 'express';
 import Complaint, { ComplaintStatus } from '../models/complaint-model';
 import Branch from '../models/branch-model';
 import BranchSupervisor from '../models/branch-supervisor-model';
+import User from '../models/user-model';
+import { UserRole } from '../models/user-model';
+import { sendMail } from '../utils/mailer';
+import fs from 'fs';
+import { format } from 'date-fns';
 
 /**
  * Create a complaint as an authenticated user
@@ -43,6 +47,29 @@ export const createComplaint = async (req: Request, res: Response): Promise<void
         createdAt: complaint.createdAt
       }
     });
+
+    // Send notification email to the supervisor of the branch
+    const supervisors = await BranchSupervisor.find({ branchCode: complaint.branchCode });
+    console.log('Supervisors found:', supervisors);
+    if (supervisors.length > 0) { 
+      let htmlContent = fs.readFileSync('./src/utils/email-templates/notify-complaint-email.html', 'utf8');
+      htmlContent = htmlContent
+        .replace('{complaintId}', (complaint._id as any).toString())
+        .replace('{customerName}', req.user.fullName || 'Anonymous Customer')
+        .replace('{complaintDescription}', complaint.description)
+        .replace('{complaintDate}', format(complaint.createdAt, 'PPPpp'));
+
+      for (const supervisor of supervisors) {
+        const user = await User.findById(supervisor.user);
+        if (user && user.email) {
+          sendMail(
+            user.email,
+            'New Complaint Submitted',
+            htmlContent
+          );
+        }
+      }
+    }
   } catch (error) {
     res.status(500).json({ message: 'Error submitting complaint', error });
   }
@@ -77,6 +104,28 @@ export const createAnonymousComplaint = async (req: Request, res: Response): Pro
       complaintId: complaint._id, // Only return ID for anonymous complaints
       status: complaint.status
     });
+
+    // Send notification email to the supervisor of the branch
+    const supervisors = await BranchSupervisor.find({ branchCode: complaint.branchCode });
+    if (supervisors.length > 0) { 
+      let htmlContent = fs.readFileSync('./src/utils/email-templates/notify-complaint-email.html', 'utf8');
+      htmlContent = htmlContent
+        .replace('{complaintId}', (complaint._id as any).toString())
+        .replace('{customerName}', 'Anonymous Customer')
+        .replace('{complaintDescription}', complaint.description)
+        .replace('{complaintDate}', format(complaint.createdAt, 'PPPpp'));
+
+      for (const supervisor of supervisors) {
+        const user = await User.findById(supervisor.user);
+        if (user && user.email) {
+          sendMail(
+            user.email,
+            'New Complaint Submitted',
+            htmlContent
+          );
+        }
+      }
+    }
   } catch (error) {
     res.status(500).json({ message: 'Error submitting anonymous complaint', error });
   }
@@ -87,7 +136,6 @@ export const createAnonymousComplaint = async (req: Request, res: Response): Pro
  */
 export const getAllComplaints = async (req: Request, res: Response): Promise<void> => {
   try {
-    // Query parameters for filtering
     const { status, branchCode } = req.query;
     const filter: any = {};
     
@@ -180,7 +228,6 @@ export const getComplaintById = async (req: Request, res: Response): Promise<voi
       return;
     }
     
-    // Full complaint details
     res.json({ complaint });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching complaint', error });
@@ -267,7 +314,6 @@ export const addActionToComplaint = async (req: Request, res: Response): Promise
       }
     }
     
-    // Add the action to the actionsTaken array
     complaint.actionsTaken.push(action);
     await complaint.save();
     
@@ -275,10 +321,32 @@ export const addActionToComplaint = async (req: Request, res: Response): Promise
       message: 'Action added to complaint successfully',
       actionsTaken: complaint.actionsTaken
     });
+
+    // Send notification to the user if they are not anonymous
+    if (!complaint.isAnonymous && complaint.createdBy) {
+      let htmlContent = fs.readFileSync('./src/utils/email-templates/notify-action-email.html', 'utf8');
+      const user = await User.findById(complaint.createdBy);
+      
+      htmlContent = htmlContent
+        .replace('{customerName}', user?.fullName || 'Customer')
+        .replace('{complaintId}', (complaint._id as any).toString())
+        .replace('{complaintDescription}', complaint.description)
+        .replace('{complaintDate}', format(complaint.createdAt, 'PPPpp'))
+        .replace('{actionTaken}', complaint.actionsTaken.map((action: any) => action.description).join(', '))
+        .replace('{complaintStatus}', complaint.status)
+        .replace('{actionDate}', format(complaint.updatedAt, 'PPPpp'));
+
+      if (user && user.email) {
+        sendMail(
+          user.email,
+          'Action Taken on Your Complaint',
+          htmlContent
+        );
+      }
+    }
   } catch (error) {
     res.status(500).json({ message: 'Error adding action to complaint', error });
   }
 };
 
-// Import at the top of the file
-import { UserRole } from '../models/user-model';
+

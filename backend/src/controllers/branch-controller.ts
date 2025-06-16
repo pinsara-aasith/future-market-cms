@@ -1,6 +1,5 @@
-// src/controllers/branch-controller.ts
 import { Request, Response } from 'express';
-import Branch, { IBranch } from '../models/branch-model';
+import Branch from '../models/branch-model';
 
 /**
  * Create a new branch (admin only)
@@ -16,7 +15,6 @@ export const createBranch = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    // Create new branch
     const branch = new Branch({
       branchCode,
       branchName,
@@ -79,7 +77,6 @@ export const updateBranch = async (req: Request, res: Response): Promise<void> =
     const { id } = req.params;
     const { branchName, address, phoneNo } = req.body;
     
-    // Find and update the branch
     const updatedBranch = await Branch.findByIdAndUpdate(
       id,
       {

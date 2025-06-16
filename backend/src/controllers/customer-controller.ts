@@ -1,4 +1,3 @@
-// src/controllers/customer-controller.ts
 import { Request, Response } from 'express';
 import User from '../models/user-model';
 import Customer, { ICustomer } from '../models/customer-model';
@@ -13,14 +12,12 @@ export const registerCustomer = async (req: Request, res: Response): Promise<voi
   try {
     const { fullName, email, phoneNo, password } = req.body.user;
     const { eCardHolder } = req.body.eCardHolder || false;
-    // Check if email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       res.status(400).json({ message: 'Email is already in use' });
       return;
     }
 
-    // Create user with customer role
     const user = new User({
       fullName,
       email,
@@ -31,7 +28,6 @@ export const registerCustomer = async (req: Request, res: Response): Promise<voi
 
     await user.save();
 
-    // Create customer profile
     const customer = new Customer({
       user: user._id,
       eCardHolder
@@ -119,7 +115,6 @@ export const updateCustomerProfile = async (req: Request, res: Response): Promis
     const userId = req.user?._id;
     const { fullName, phoneNo, eCardHolder } = req.body;
 
-    // Update user information
     const user = await User.findByIdAndUpdate(
       userId,
       { fullName, phoneNo },
@@ -131,7 +126,6 @@ export const updateCustomerProfile = async (req: Request, res: Response): Promis
       return;
     }
 
-    // Update customer information
     const customer = await Customer.findOneAndUpdate(
       { user: userId },
       { eCardHolder },
@@ -162,7 +156,6 @@ export const deleteCustomerAccount = async (req: Request, res: Response): Promis
   try {
     const userId = req.user?._id;
 
-    // Delete customer profile
     const deletedCustomer = await Customer.findOneAndDelete({ user: userId });
 
     if (!deletedCustomer) {
@@ -170,7 +163,6 @@ export const deleteCustomerAccount = async (req: Request, res: Response): Promis
       return;
     }
 
-    // Delete user account
     const deletedUser = await User.findByIdAndDelete(userId);
 
     if (!deletedUser) {
@@ -191,7 +183,6 @@ export const getCustomerById = async (req: Request, res: Response): Promise<void
   try {
     const { id } = req.params;
 
-    // Validate if the ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(400).json({ message: 'Invalid customer ID format' });
       return;
@@ -221,13 +212,11 @@ export const deleteCustomer = async (req: Request, res: Response): Promise<void>
   try {
     const { id } = req.params;
 
-    // Validate if the ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(400).json({ message: 'Invalid customer ID format' });
       return;
     }
 
-    // Find the customer first to get the user ID
     const customer = await Customer.findById(id);
     
     if (!customer) {
@@ -235,10 +224,8 @@ export const deleteCustomer = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    // Delete customer profile
     const deletedCustomer = await Customer.findByIdAndDelete(id);
 
-    // Delete associated user account
     const deletedUser = await User.findByIdAndDelete(customer.user);
 
     if (!deletedUser) {
