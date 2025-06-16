@@ -1,7 +1,3 @@
-/**
- * Application constants
- */
-
 // User roles
 export const USER_ROLES = {
   ADMIN: 'admin',

@@ -1,4 +1,3 @@
-// src/controllers/auth-controller.ts
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import User, { UserRole, IUser } from "../models/user-model";
@@ -126,8 +125,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
  * User logout
  */
 export const logout = async (req: Request, res: Response): Promise<void> => {
-  // Note: In a real implementation, you might want to invalidate tokens
-  // by adding them to a blacklist or using Redis for token management
   res.json({ message: "Logged out successfully" });
 };
 
@@ -178,7 +175,6 @@ export const getCurrentUser = async (
   res: Response
 ): Promise<void> => {
   try {
-    // User is attached from auth middleware
     if (!req.user) {
       res.status(401).json({ message: "Not authenticated" });
       return;
