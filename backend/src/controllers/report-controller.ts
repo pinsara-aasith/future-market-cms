@@ -1,13 +1,29 @@
 import { Request, Response } from 'express';
 import Complaint from '../models/complaint-model';
 import branchModel from '../models/branch-model';
+import { start } from 'repl';
 
 export const getReport = async (req: Request, res: Response) => {
   try {
     // Extract and parse dates from query params
+
     const startDate = req.query.start ? new Date(req.query.start as string) : null;
     const endDate = req.query.end ? new Date(req.query.end as string) : null;
+
+    // IST offset in milliseconds (UTC+5:30)
+    const IST_OFFSET = 5.5 * 60 * 60 * 1000;
+
+    // Adjust to start of local day
+    if (startDate) startDate.setHours(0, 0, 0, 0);
+    if (endDate) endDate.setHours(23, 59, 59, 999);
+
+    // Subtract IST offset so comparisons happen correctly against UTC-stored dates
+    const startUtc = startDate ? new Date(startDate.getTime() + IST_OFFSET) : null;
+    const endUtc = endDate ? new Date(endDate.getTime() + IST_OFFSET) : null;
+
+
     const branchCode = req.query.branchCode ? (req.query.branchCode as string) : null;
+    console.log('Start date after:', startUtc);
 
     // Validate dates
     if (!startDate || !endDate || isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
@@ -22,11 +38,11 @@ export const getReport = async (req: Request, res: Response) => {
     // Generate summary
     if (branchCode) {
       // Branch-specific summary
-      const branchSummary = await generateBranchSummary(startDate, endDate, branchCode);
+      const branchSummary = await generateBranchSummary(startUtc as Date, endUtc as Date, branchCode);
       return res.json(branchSummary);
     } else {
       // Overall summary
-      const summary = await generateSummary(startDate, endDate);
+      const summary = await generateSummary(startUtc as Date, endUtc as Date);
       return res.json(summary);
     }
   } catch (error) {
@@ -43,9 +59,10 @@ export const generateSummary = async (startDate: Date, endDate: Date) => {
       $lte: endDate,
     },
   };
-
+  console.log(`Generating overall summary from`, startDate, startDate.toISOString());
   // Counts with date filter
   const total = await Complaint.countDocuments(dateFilter);
+  console.log(`Total complaints in date range: ${total}`);
   const resolved = await Complaint.countDocuments({ ...dateFilter, status: 'resolved' });
   const pending = await Complaint.countDocuments({ ...dateFilter, status: 'pending' });
   const inProgress = await Complaint.countDocuments({ ...dateFilter, status: 'in_progress' });

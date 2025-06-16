@@ -1,5 +1,6 @@
 import api from './api';
 import { BranchReport, OverallReport } from '../types';
+import { format } from 'date-fns';
 
 interface GetReportsParams {
   startDate: Date;
@@ -15,8 +16,8 @@ export const getReports = async ({
   try {
     const response = await api.get('/report', {
       params: {
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
+        start: format(startDate, "yyyy-MM-dd'T'HH:mm:ssxxx"),
+        end: format(endDate, "yyyy-MM-dd'T'HH:mm:ssxxx"),
         branchCode, // Optional parameter for branch-specific reports
       },
     });
@@ -35,3 +36,5 @@ export const getReports = async ({
     throw error;
   }
 };
+
+
