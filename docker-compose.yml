@@ -3,18 +3,18 @@ version: '3.8'
 services:
   mongodb:
     image: mongo:6.0
-    container_name: supermarket-mongo
+    container_name: future-market-cms-mongo
     restart: unless-stopped
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
     networks:
-      - supermarket-network
+      - future-market-cms-network
 
   backend:
-    image: ${DOCKER_USERNAME}/supermarket-backend:latest
-    container_name: supermarket-backend
+    image: ${DOCKER_USERNAME}/future-market-cms-backend:latest
+    container_name: future-market-cms-backend
     restart: unless-stopped
     ports:
       - "3344:3344"
@@ -28,11 +28,11 @@ services:
     depends_on:
       - mongodb
     networks:
-      - supermarket-network
+      - future-market-cms-network
 
   frontend:
-    image: ${DOCKER_USERNAME}/supermarket-frontend:latest
-    container_name: supermarket-frontend
+    image: ${DOCKER_USERNAME}/future-market-cms-frontend:latest
+    container_name: future-market-cms-frontend
     restart: unless-stopped
     ports:
       - "80:80"
@@ -41,11 +41,11 @@ services:
     depends_on:
       - backend
     networks:
-      - supermarket-network
+      - future-market-cms-network
 
 volumes:
   mongodb_data:
 
 networks:
-  supermarket-network:
+  future-market-cms-network:
     driver: bridge
