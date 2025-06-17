@@ -99,7 +99,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
             <SidebarLink to="/dashboard" icon={<LayoutDashboard size={18} />} label="Dashboard" />
             <SidebarLink to="/complaints" icon={<MessageSquare size={18} />} label="Complaints" />
             {adminLinks}
-            <SidebarLink to="/profile" icon={<UserCircle size={18} />} label="Profile" />
+            {/* <SidebarLink to="/profile" icon={<UserCircle size={18} />} label="Profile" /> */}
           </nav>
           <div className="pt-6 border-t border-neutral-200 mt-6">
             <Button 
@@ -152,12 +152,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                     onClick={closeMobileMenu}
                   />
                   {adminLinks}
-                  <SidebarLink 
+                  {/* <SidebarLink 
                     to="/profile" 
                     icon={<UserCircle size={18} />} 
                     label="Profile" 
                     onClick={closeMobileMenu}
-                  />
+                  /> */}
                 </nav>
                 <div className="pt-6 border-t border-neutral-200 mt-6">
                   <Button 
