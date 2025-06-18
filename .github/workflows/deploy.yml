@@ -75,6 +75,9 @@ jobs:
           DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
           JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}
+          MONGODB_URI=${{ secrets.MONGODB_URI }}
+          EMAIL_USER=${{ secrets.EMAIL_USER }}
+          EMAIL_PASS=${{ secrets.EMAIL_PASS }}
           EOF
           
           # Create docker-compose.yml
@@ -104,7 +107,10 @@ jobs:
                 - MONGODB_URI=mongodb://mongodb:27017/future-stores-cms
                 - JWT_SECRET=${{ secrets.JWT_SECRET }}
                 - JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}
-                - JWT_EXPIRE=30d
+                - JWT_EXPIRATION=30d
+                - SALT_ROUNDS=10
+                - EMAIL_USER=${{ secrets.EMAIL_USER }}
+                - EMAIL_PASS=${{ secrets.EMAIL_PASS }}
                 - NODE_ENV=production
               depends_on:
                 - mongodb

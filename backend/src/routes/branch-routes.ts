@@ -13,6 +13,8 @@ import { UserRole } from '../models/user-model';
 import { branchValidations } from '../validators/validation-schemas';
 import { validate } from '../validators/validation-utils';
 
+
+
 const router = Router();
 
 // Public route to get all branches

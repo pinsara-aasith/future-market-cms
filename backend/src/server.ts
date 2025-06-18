@@ -14,6 +14,9 @@ import reportRoutes from './routes/report-routes';
 import { errorHandler } from './middleware/error-handler';
 import { setupAdminUser } from './utils/admin-setup';
 import { logger } from './utils/logger';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './swagger';
+
 
 // Load environment variables
 dotenv.config();
@@ -29,6 +32,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
+
+// Swagger docs
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
 app.use('/api', indexRoutes);
